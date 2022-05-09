@@ -52,7 +52,7 @@ meaning any changes made to the `global_config` will reflect to any future calls
 
 ### Other config
 
-* You can use the `MakeEvent` wrapper function to change the signal you use.
+* You can use the `MakeSignal` wrapper function to change the signal you use.
 	You can use any signal creator, i.e `BindableEvents`, or something like `GoodSignal` for example.
 
 	NOTE: Any custom signal must use the same construction and firing syntax as bindable events.
@@ -65,5 +65,7 @@ meaning any changes made to the `global_config` will reflect to any future calls
 	the stock events; which would render this module obsolete.
 
 
-# How?
+# API
+
+* `module.Listen(gui: GuiObject, info: dictionary)`
 
