@@ -81,12 +81,12 @@ function module.Listen(gui, options)
 
 	local function Enter()
 		if info.entered then return end
-		info.entered = true
 
 		if not info.allowMultiple then
 			LeaveAll()
 		end
 
+		info.entered = true
 		enter:Fire()
 	end
 
