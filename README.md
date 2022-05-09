@@ -53,19 +53,19 @@ meaning any changes made to the `global_config` will reflect to any future calls
 ### Other config
 
 * You can use the `MakeSignal` wrapper function to change the signal you use.
-	You can use any signal creator, i.e `BindableEvents`, or something like `GoodSignal` for example.
-
-	NOTE: Any custom signal must use the same construction and firing syntax as bindable events.
+	* You can use any signal creator, i.e `BindableEvents`, or something like `GoodSignal` for example.
+		NOTE: Any custom signal must use the same construction and firing syntax as bindable events.
 
 * `events_enabled` constant.
-	Set to 'false' to disable all custom behavior
-	and fallback to the default roblox events.
+	* Set to 'false' to disable all custom behavior
+		and fallback to the default roblox events.
 
-	A case where this may be useful would be if roblox ever improves
-	the stock events; which would render this module obsolete.
+	* A case where this may be useful would be if roblox ever improves
+		the stock events; which would render this module obsolete.
 
 
 # API
 
 * `module.Listen(gui: GuiObject, info: dictionary)`
+* `module.Release(gui: GuiObject)`
 
