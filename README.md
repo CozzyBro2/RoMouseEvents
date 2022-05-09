@@ -37,17 +37,17 @@ Many options in the module can be configured.
 Configuration is done both through the `global_config` table in the module,
 and through a configuration table passed as the second argument of `module.Listen`.
 
-This table inherits and overwrites any values from `global_config` to keep usage simple
-Meaning any changes made to the `global_config` will reflect to any future calls to `module.Listen`.
+This table inherits and overwrites any values from `global_config` to keep usage simple,
+meaning any changes made to the `global_config` will reflect to any future calls to `module.Listen`.
 
 ### Options:
 
-`allowMultiple: bool`
+* `allowMultiple: bool`
 
 	Whether the event can fire on another gui while a different gui is still entered.
 
-	`Recommended: false`
-	`Default: false`
+	* Recommended: false
+	* Default: false
 
 ### Other config
 
