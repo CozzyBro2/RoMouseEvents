@@ -35,6 +35,7 @@ local function GetConfig(options)
 	-- // Merge given config with global config
 
 	local info = {}
+	options = options or {}
 
 	for key, value in pairs(global_config) do
 		info[key] = options[key] or value
@@ -73,13 +74,13 @@ function module.Listen(gui, options)
 		local input = object.UserInputType
 
 		if input == Enum.UserInputType.MouseMovement or input == Enum.UserInputType.Touch then
-			info.entered = true
+			enter:Fire()
 
 			if not info.allowMultiple then
 				LeaveAll()
 			end
 
-			enter:Fire()
+			info.entered = true
 		end
 	end
 
