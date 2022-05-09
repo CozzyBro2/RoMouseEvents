@@ -5,11 +5,12 @@ ROBLOX Module that provides an abstraction for alternative `gui.MouseEnter` &amp
 
 The stock `gui.MouseEnter` and `gui.MouseLeave` events provided by roblox operate in undesirable ways for many.
 
-Below is an example image, where on `MouseEnter`; a gui object's background color is set to white, and then back to black on `MouseLeave`:
+One example of this might be where two seperate GUI fire `.MouseEnter` without `.MouseLeave` firing for the other,
+Causing possibly unintended behavior:
 
 ![example](./Resources/mouseleave-weird.png)
 
-Notice that two of the buttons are highlighted white at once. This is not intended behavior, and happens very frequently; especially on mobile.
+Notice that two of the buttons are highlighted at once. This is visually jarring in this case.
 
 # Getting started
 
@@ -44,19 +45,25 @@ meaning any changes made to the `global_config` will reflect to any future calls
 
 * `allowMultiple: bool`
 
-	Whether the event can fire on another gui while a different gui is still entered.
+	Whether the event can fire on a gui while another gui is currently entered.
 
-	* Recommended: false
-	* Default: false
+	* Recommended: `false`
+	* Default: `false`
 
 ### Other config
 
-As documented in the module, you can use the `MakeEvent` wrapper function to change the signal you use.
+* You can use the `MakeEvent` wrapper function to change the signal you use.
+	You can use any signal creator, i.e `BindableEvents`, or something like `GoodSignal` for example.
 
-From the module:
+	NOTE: Any custom signal must use the same construction and firing syntax as bindable events.
 
-"Wrapper that you can modify to use a different signal creator. (such as 'GoodSignal', for example)
-NOTE: Custom signal must be mostly syntactically identical to bindable events"
+* `events_enabled` constant.
+	Set to 'false' to disable all custom behavior
+	and fallback to the default roblox events.
+
+	A case where this may be useful would be if roblox ever improves
+	the stock events; which would render this module obsolete.
+
 
 # How?
 
