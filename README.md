@@ -50,6 +50,16 @@ meaning any changes made to the `global_config` will reflect to any future calls
 	* Recommended: `false`
 	* Default: `false`
 
+* `watchPosition: bool`
+
+	Whether the `AbsolutePosition` of the gui is listened to for changes.
+	Enabling this allows `MouseLeave` to fire if the gui moves but the InputDevice does not, the stock events lack this.
+
+	!! This can make actions such as scrolling a bunch of guis at once much more taxing.
+
+	* Recommended: `false`
+	* Default: `false`
+
 ### Other config
 
 * You can use the `MakeSignal` wrapper function to change the signal you use.
@@ -66,6 +76,6 @@ meaning any changes made to the `global_config` will reflect to any future calls
 
 # API
 
-* `module.Listen(gui: GuiObject, info: dictionary)`
+* `module.Listen(gui: GuiObject, info?: dictionary)`
 * `module.Release(gui: GuiObject)`
 

@@ -1,5 +1,3 @@
---!strict
-
 local module = {}
 
 local events_enabled = true
@@ -12,9 +10,11 @@ local global_config = {
 	--// See #Configuration in README.md for details
 
 	allowMultiple = false,
+	watchPosition = false,
 
 }
 
+local inputs = game:GetService('UserInputService')
 local active = {}
 
 local function MakeSignal()
@@ -55,6 +55,15 @@ local function LeaveAll()
 	end
 end
 
+local function Validate(object)
+	-- // Ensures the input is a supported type
+	-- // You can add support for other inputs here
+
+	local input = object.UserInputType
+
+	return input == Enum.UserInputType.MouseMovement or input == Enum.UserInputType.Touch
+end
+
 function module.Listen(gui, options)
 	-- // Return mouse events given a GuiObject and an optional config
 
@@ -70,32 +79,55 @@ function module.Listen(gui, options)
 	local enter = MakeSignal()
 	local leave = MakeSignal()
 
+	local function Enter()
+		if info.entered then return end
+		info.entered = true
+
+		if not info.allowMultiple then
+			LeaveAll()
+		end
+
+		enter:Fire()
+	end
+
+	local function Leave()
+		if not info.entered then return end
+		info.entered = false
+
+		leave:Fire()
+	end
+
 	local function Began(object)
-		local input = object.UserInputType
-
-		if input == Enum.UserInputType.MouseMovement or input == Enum.UserInputType.Touch then
-			enter:Fire()
-
-			if not info.allowMultiple then
-				LeaveAll()
-			end
-
-			info.entered = true
+		if Validate(object) then
+			Enter()
 		end
 	end
 
-	local function Left(object)
-		local input = object.UserInputType
-
-		if input == Enum.UserInputType.MouseMovement or input == Enum.UserInputType.Touch then
-			info.entered = false
-
-			leave:Fire()
+	local function Ended(object)
+		if Validate(object) then
+			Leave()
 		end
+	end
+
+	local function Moved()
+		local position = inputs:GetMouseLocation()
+
+		local distance = (Vector2.new(position.X, position.Y) - gui.AbsolutePosition)
+		local colliding = distance.Magnitude <= gui.AbsoluteSize.Magnitude / 2
+
+		if colliding then
+			Enter()
+		else
+			Leave()
+		end
+	end
+
+	if info.watchPosition then
+		connections.moved = gui:GetPropertyChangedSignal('AbsolutePosition'):Connect(Moved)
 	end
 
 	connections.began = gui.InputBegan:Connect(Began)
-	connections.ended = gui.InputEnded:Connect(Left)
+	connections.ended = gui.InputEnded:Connect(Ended)
 
 	info.enter = enter
 	info.leave = leave
