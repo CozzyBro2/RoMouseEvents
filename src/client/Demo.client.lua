@@ -15,3 +15,7 @@ end)
 leave:Connect(function()
 	print("hey i've left")
 end)
+
+task.wait(5)
+
+mouseEvents.Release(frame)
