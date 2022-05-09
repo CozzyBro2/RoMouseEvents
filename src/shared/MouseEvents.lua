@@ -17,18 +17,12 @@ local events_enabled = true
 local global_config = {
 
 	allowMultiple = false,
-	--[[
-		Whether the event can fire on another gui while a different gui is still entered.
-
-		Recommended: false
-		Default: false
-	]]
 
 }
 
-local function MakeSignal()
+local function MakeEvent()
 	--[[
-		Wrapper that you can modify to use a different signal.
+		Wrapper that you can modify to use a different signal creator. (such as 'GoodSignal', for example)
 		NOTE: Custom signal must be syntactically identical to bindable events
 	]]
 	return Instance.new('BindableEvent')
