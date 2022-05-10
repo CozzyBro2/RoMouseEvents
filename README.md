@@ -61,6 +61,8 @@ meaning any changes made to the `global_config` will reflect to any future calls
 	* A case where you may use this would be if roblox ever improves
 		their stock events; which would render custom behavior obsolete.
 
+	* Default: `true`
+
 ### Other config
 
 * You can use the `MakeSignal` wrapper function to change the signal you use.

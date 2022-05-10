@@ -101,7 +101,7 @@ local function Entered(info)
 	-- // Fired whenever the input enters the gui
 	-- // Can only fire while the gui isn't considered entered
 
-	if info.entered then print('early') return end
+	if info.entered then return end
 
 	if not info.allowMultiple then
 		LeaveAll()
