@@ -12,6 +12,10 @@ local global_config = {
 }
 
 local inputs = game:GetService('UserInputService')
+local guis = game:GetService('GuiService')
+
+local playerGui = game:GetService('Players').LocalPlayer.PlayerGui
+
 local active = {}
 
 local function MakeSignal()
@@ -52,15 +56,20 @@ end
 
 local function IsEntered(gui)
 	--[[
-		Likely inaccurate heuristic to tell if the mouse occupies the same space as the target gui
-		Used to tell if the mouse is still focused on a gui even if the position changes, but the mouse doesn't
+		Used to tell if the mouse is still focused on a gui even if the position changes, but the mouse doesn't move
 		Only used when 'watchPosition' is enabled
 		See #Configuration in README.md for details
 	--]]
 
 	local position = inputs:GetMouseLocation()
+	local inset = guis:GetGuiInset()
 
-	return (Vector2.new(position.X, position.Y) - gui.AbsolutePosition).Magnitude <= gui.AbsoluteSize.Magnitude
+	local occupying = playerGui:GetGuiObjectsAtPosition(
+		position.X - inset.X,
+		position.Y - inset.Y
+	)
+
+	return table.find(occupying, gui)
 end
 
 local function Left(info)
