@@ -3,14 +3,12 @@ ROBLOX Module that provides an abstraction for alternative `gui.MouseEnter` &amp
 
 # Why?
 
-The stock `gui.MouseEnter` and `gui.MouseLeave` events provided by roblox operate in undesirable ways for many.
+The stock `gui.MouseEnter` and `gui.MouseLeave` events may not function ideally for some usages.
 
-One example of this might be where two seperate GUI fire `.MouseEnter` without `.MouseLeave` firing for the other,
-Causing possibly unintended behavior:
+1. If the gui moves while considered entered, but your mouse doesn't move;
+`MouseLeave` doesn't fire. Which can lead to "phantom entered" gui
 
-![example](./Resources/mouseleave-weird.png)
-
-Notice that two of the buttons are highlighted at once. This is visually jarring in this case.
+2. More reasons may come, feel free to suggest any ones that should be added.
 
 # Getting started
 
@@ -45,34 +43,30 @@ meaning any changes made to the `global_config` will reflect to any future calls
 
 * `allowMultiple: bool`
 
-	Whether the event can fire on a gui while another gui is currently entered.
+	* Whether the event can fire on a gui while another gui is currently entered.
 
-	* Recommended: `false`
 	* Default: `false`
 
 * `watchPosition: bool`
 
-	Whether the `AbsolutePosition` of the gui is listened to for changes.
-	Enabling this allows `MouseLeave` to fire if the gui moves but the InputDevice does not, the stock events lack this.
+	* Whether the `AbsolutePosition` of the gui is listened to for changes while the gui is entered.
+		Enabling this allows `MouseLeave` to fire if the gui moves but the InputDevice does not, the stock events lack this.
 
-	!! This can make actions such as scrolling a bunch of guis at once much more taxing.
+	* Default: `true`
 
-	* Recommended: `false`
-	* Default: `false`
+* `eventsEnabled: bool`
+
+	* When false, disables all custom behavior and falls back to the stock roblox events.
+
+	* A case where you may use this would be if roblox ever improves
+		their stock events; which would render custom behavior obsolete.
 
 ### Other config
 
 * You can use the `MakeSignal` wrapper function to change the signal you use.
 	* You can use any signal creator, i.e `BindableEvents`, or something like `GoodSignal` for example.
-		NOTE: Any custom signal must use the same construction and firing syntax as bindable events.
 
-* `events_enabled` constant.
-	* Set to 'false' to disable all custom behavior
-		and fallback to the default roblox events.
-
-	* A case where this may be useful would be if roblox ever improves
-		the stock events; which would render this module obsolete.
-
+	* NOTE: Any custom signal should use similar or identical syntax to bindables
 
 # API
 

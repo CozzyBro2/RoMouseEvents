@@ -1,16 +1,13 @@
 local module = {}
 
-local events_enabled = true
--- // Controls if the custom events are enabled
--- // See #Configuration in README.md for details
-
-
 local global_config = {
 	--// The configuration all config tables inherit and can overwrite
 	--// See #Configuration in README.md for details
 
+	eventsEnabled = true,
+
 	allowMultiple = false,
-	watchPosition = false,
+	watchPosition = true,
 
 }
 
@@ -44,17 +41,6 @@ local function GetConfig(options)
 	return info
 end
 
-local function LeaveAll()
-	-- // Fire leave for every active gui
-	-- // Used when 'allowMultiple' is falsy
-
-	for _, info in pairs(active) do
-		if info.entered then
-			info.leave:Fire()
-		end
-	end
-end
-
 local function Validate(object)
 	-- // Ensures the input is a supported type
 	-- // You can add support for other inputs here
@@ -64,66 +50,97 @@ local function Validate(object)
 	return input == Enum.UserInputType.MouseMovement or input == Enum.UserInputType.Touch
 end
 
+local function IsEntered(gui)
+	--[[
+		Likely inaccurate heuristic to tell if the mouse occupies the same space as the target gui
+		Used to tell if the mouse is still focused on a gui even if the position changes, but the mouse doesn't
+		Only used when 'watchPosition' is enabled
+		See #Configuration in README.md for details
+	--]]
+
+	local position = inputs:GetMouseLocation()
+
+	return (Vector2.new(position.X, position.Y) - gui.AbsolutePosition).Magnitude <= gui.AbsoluteSize.Magnitude
+end
+
+local function Left(info)
+	-- // Fired whenever the input leaves the gui
+	-- // Can only fire while the gui is considered entered
+
+	if not info.entered then return end
+	info.entered = false
+
+	local moved = info.connections.moved
+
+	if moved then
+		moved:Disconnect()
+	end
+
+	info.leave:Fire()
+end
+
+local function LeaveAll()
+	-- // Fire leave for every active gui
+	-- // Used when 'allowMultiple' is falsy
+
+	for _, info in pairs(active) do
+		Left(info)
+	end
+end
+
+local function Entered(info)
+	-- // Fired whenever the input enters the gui
+	-- // Can only fire while the gui isn't considered entered
+
+	if info.entered then print('early') return end
+
+	if not info.allowMultiple then
+		LeaveAll()
+	end
+
+	if info.watchPosition then
+		local gui = info.gui
+
+		info.connections.moved = gui:GetPropertyChangedSignal('AbsolutePosition'):Connect(function()
+			-- // Is the mouse still colliding with the gui?
+			-- // If not, we should fire leave
+
+			if not IsEntered(gui) then
+				Left(info)
+			end
+		end)
+	end
+
+	info.entered = true
+	info.enter:Fire()
+end
+
 function module.Listen(gui, options)
 	-- // Return mouse events given a GuiObject and an optional config
 
-	if not events_enabled then
+	local info = GetConfig(options)
+
+	if not info.eventsEnabled then
 		-- // Abort and return stock events
 
 		return gui.MouseEnter, gui.MouseLeave
 	end
 
-	local info = GetConfig(options)
 	local connections = {}
 
 	local enter = MakeSignal()
 	local leave = MakeSignal()
 
-	local function Enter()
-		if info.entered then return end
-
-		if not info.allowMultiple then
-			LeaveAll()
-		end
-
-		info.entered = true
-		enter:Fire()
-	end
-
-	local function Leave()
-		if not info.entered then return end
-		info.entered = false
-
-		leave:Fire()
-	end
-
 	local function Began(object)
 		if Validate(object) then
-			Enter()
+			Entered(info)
 		end
 	end
 
 	local function Ended(object)
 		if Validate(object) then
-			Leave()
+			Left(info)
 		end
-	end
-
-	local function Moved()
-		local position = inputs:GetMouseLocation()
-
-		local distance = (Vector2.new(position.X, position.Y) - gui.AbsolutePosition)
-		local colliding = distance.Magnitude <= gui.AbsoluteSize.Magnitude / 2
-
-		if colliding then
-			Enter()
-		else
-			Leave()
-		end
-	end
-
-	if info.watchPosition then
-		connections.moved = gui:GetPropertyChangedSignal('AbsolutePosition'):Connect(Moved)
 	end
 
 	connections.began = gui.InputBegan:Connect(Began)
@@ -133,6 +150,8 @@ function module.Listen(gui, options)
 	info.leave = leave
 
 	info.connections = connections
+	info.gui = gui
+
 	active[gui] = info
 
 	return GetEvent(enter), GetEvent(leave)
